@@ -24,6 +24,8 @@ function SignUp() {
     city: "",
     contact: "",
   });
+
+  const [isError, setError] = useState(false);
   const router = useRouter();
 
   const validateEmail = (email) => {
@@ -44,72 +46,90 @@ function SignUp() {
     return phonePattern.test(number);
   };
 
+  const checkValidation = (value) => {
+    console.log("inside check validation", value.length);
+    return value.length === 0 ? false : true;
+  };
+
+  const validateField = (value, fieldName) => {
+    console.log("inside validate field method", value, fieldName);
+    switch (fieldName) {
+      case "email":
+        return validateEmail(value);
+      case "password":
+        return validatePassword(value);
+      case "confirmPassword":
+        return validateConfirmPassword(signupData.password, value);
+      case "contact":
+        return validatePhoneNo(value);
+      case "restrauntName":
+        return checkValidation(value);
+      case "address":
+        return checkValidation(value);
+      case "city":
+        return checkValidation(value);
+      default:
+        return true;
+    }
+  };
+
+  const customErrorMessage = (fieldName) => {
+    switch (fieldName) {
+      case "email":
+        return "email is not correct";
+      case "password":
+        return "password length: min 5 chars required";
+      case "confirmPassword":
+        return "password does not match";
+      case "contact":
+        return "phone no is not valid";
+      case "city":
+        return "phone no is not valid";
+      case "address":
+        return "address is required";
+      case "restrauntName":
+        return "restraunt name is required";
+      default:
+        return "";
+    }
+  };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+    console.log(name);
     setSignupData({
       ...signupData,
       [name]: value,
     });
 
-    switch (name) {
-      case "email":
-        setFormDataError({
-          ...formDataError,
-          email:
-            value.length !== 0
-              ? validateEmail(value)
-                ? ""
-                : "email is not correct"
-              : "",
-        });
-        break;
-      case "password":
-        setFormDataError({
-          ...formDataError,
-          password:
-            value.length !== 0
-              ? validatePassword(value)
-                ? ""
-                : "password length should be greater than equal to 5"
-              : "",
-        });
-        break;
-      case "confirmPassword":
-        setFormDataError({
-          ...formDataError,
-          confirmPassword:
-            value.length !== 0
-              ? validateConfirmPassword(signupData.password, value)
-                ? ""
-                : "password dont match"
-              : "",
-        });
-        break;
-      case "restrauntName":
-        setFormDataError({
-          ...formDataError,
-          restrauntName: value.length !== 0 ? "" : "please enter the name",
-        });
-        break;
-      case "address":
-        setFormDataError({
-          ...formDataError,
-          address: value.length !== 0 ? "" : "please enter address",
-        });
-      case "city":
-        setFormDataError({
-          ...formDataError,
-          city: value.length !== 0 ? "" : "please enter the city",
-        });
-        break;
-      case "contact":
-        setFormDataError({
-          ...formDataError,
-          contact: validatePhoneNo(value) ? "" : "please enter the name",
-        });
-        break;
-      default:
-        break;
+    const tempError = { ...formDataError };
+
+    if(value.length === 0){
+      tempError[name] = `${name} is required`
+    } else if (!validateField(value,name)){
+      tempError[name] = customErrorMessage(name)
+    } else {
+      tempError[name] = ""
+    }
+
+    setFormDataError(tempError)
+
+    if (Object.values(tempError).some((error) => error !== "")) {
+      setError(true); // If any field has an error, set isError to true
+    } else {
+      setError(false); // No errors, so set isError to false
+    }
+  };
+
+  const handldeOnFocus = (e) => {
+    console.log("isnide focus method");
+    const { name, value } = e.target;
+    if (!value.length) {
+      setFormDataError({
+        ...formDataError,
+        [name]: `${name} is required`,
+      });
+      setError(true);
     }
   };
 
@@ -149,6 +169,9 @@ function SignUp() {
     }
   };
 
+  // console.log("error obj", formDataError);
+  console.log("is error", isError);
+
   return (
     <>
       <h3>Signup component</h3>
@@ -161,8 +184,9 @@ function SignUp() {
             placeholder="enter username/email"
             onChange={handleInputChange}
             value={signupData.email}
+            onFocus={handldeOnFocus}
           />
-          {formDataError?.email.length ? (
+          {formDataError?.email?.length ? (
             <div style={{ color: "red" }}>{formDataError?.email}</div>
           ) : (
             ""
@@ -176,8 +200,9 @@ function SignUp() {
             placeholder="enter password"
             onChange={handleInputChange}
             value={signupData.password}
+            onFocus={handldeOnFocus}
           />
-          {formDataError?.password.length ? (
+          {formDataError?.password?.length ? (
             <div style={{ color: "red" }}>{formDataError?.password}</div>
           ) : (
             ""
@@ -191,8 +216,9 @@ function SignUp() {
             placeholder="confirm password"
             onChange={handleInputChange}
             value={signupData.confirmPassword}
+            onFocus={handldeOnFocus}
           />
-          {formDataError?.confirmPassword.length ? (
+          {formDataError?.confirmPassword?.length ? (
             <div style={{ color: "red" }}>{formDataError?.confirmPassword}</div>
           ) : (
             ""
@@ -206,8 +232,9 @@ function SignUp() {
             placeholder="enter restraunt name"
             onChange={handleInputChange}
             value={signupData.restrauntName}
+            onFocus={handldeOnFocus}
           />
-          {formDataError?.restrauntName.length ? (
+          {formDataError?.restrauntName?.length ? (
             <div style={{ color: "red" }}>{formDataError?.restrauntName}</div>
           ) : (
             ""
@@ -221,8 +248,9 @@ function SignUp() {
             placeholder="enter address"
             onChange={handleInputChange}
             value={signupData.address}
+            onFocus={handldeOnFocus}
           />
-          {formDataError?.address.length ? (
+          {formDataError?.address?.length ? (
             <div style={{ color: "red" }}>{formDataError?.address}</div>
           ) : (
             ""
@@ -236,8 +264,9 @@ function SignUp() {
             placeholder="enter city"
             onChange={handleInputChange}
             value={signupData.city}
+            onFocus={handldeOnFocus}
           />
-          {formDataError?.city.length ? (
+          {formDataError?.city?.length ? (
             <div style={{ color: "red" }}>{formDataError?.city}</div>
           ) : (
             ""
@@ -251,8 +280,9 @@ function SignUp() {
             placeholder="enter phone no"
             onChange={handleInputChange}
             value={signupData.contact}
+            onFocus={handldeOnFocus}
           />
-          {formDataError?.contact.length ? (
+          {formDataError?.contact?.length ? (
             <div style={{ color: "red" }}>{formDataError?.contact}</div>
           ) : (
             ""
