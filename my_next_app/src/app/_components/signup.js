@@ -136,36 +136,39 @@ function SignUp() {
   // function to handle signup
   const handleSignup = async (e) => {
     e.preventDefault();
+    console.log('clicked')
 
-    try {
-      // calling post api with the payload
-      const res = await fetch("http://localhost:3000/api/restraunt", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signupData),
-      });
-
-      const response = await res.json();
-      console.log("from the post request", response);
-
-      if (response.success) {
-        console.log("user registered successfully");
-        alert("Restraunt registered successfully");
-
-        // first we will delete the password from our resposne
-        // then we will save our data into local storage.
-
-        const { result } = response;
-        delete result.password;
-        localStorage.setItem("restraunt", JSON.stringify(result));
-
-        // after successfull registration we will redirect to dasboard.
-        router.push("/restraunt/dashboard");
+    if(!isError){
+      try {
+        // calling post api with the payload
+        const res = await fetch("http://localhost:3000/api/restraunt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(signupData),
+        });
+  
+        const response = await res.json();
+        console.log("from the post request", response);
+  
+        if (response.success) {
+          console.log("user registered successfully");
+          alert("Restraunt registered successfully");
+  
+          // first we will delete the password from our resposne
+          // then we will save our data into local storage.
+  
+          const { result } = response;
+          delete result.password;
+          localStorage.setItem("restraunt", JSON.stringify(result));
+  
+          // after successfull registration we will redirect to dasboard.
+          router.push("/restraunt/dashboard");
+        }
+      } catch (error) {
+        console.log("error signup", error);
       }
-    } catch (error) {
-      console.log("error signup", error);
     }
   };
 
@@ -289,7 +292,13 @@ function SignUp() {
           )}
         </div>
         <div className="input-wrapper">
-          <button onClick={(e) => handleSignup(e)} className="button-wrapper">
+          <button onClick={(e) => {
+            if(!isError){
+              handleSignup(e)
+            }
+          }
+            } className={isError ? 'button-wrapper-error' : 'button-wrapper'}
+            >
             Signup
           </button>
         </div>

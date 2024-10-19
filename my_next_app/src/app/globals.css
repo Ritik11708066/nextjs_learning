@@ -20,6 +20,17 @@ body {
     height: 30px;
     width: 200px;
     padding: 5px;
+    background-color: lightskyblue;
+    color: black;
+    cursor: pointer;
+}
+.button-wrapper-error{
+    height: 30px;
+    width: 200px;
+    padding: 5px;
+    background-color: grey;
+    color: white;
+    cursor:not-allowed
 }
 .signup-login-text {
     color: blueviolet;

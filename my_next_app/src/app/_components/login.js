@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 function Login() {
     const [loginData, setLoginData] = useState({
@@ -13,6 +14,7 @@ function Login() {
     })
 
     const [isError, setError] = useState(false)
+    const router = useRouter()
 
     const validateEmail = (value) => {
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -69,6 +71,30 @@ function Login() {
 
     }
 
+    const handleLogin = async(e) => {
+      e.preventDefault()
+      if(!isError){
+        try {
+          const data = await fetch('https://localhost:3000/api/restraunt', {
+            method: 'POST',
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({...loginData, login: true}),
+          })
+          const res = await res.json()
+          if(res.success){
+            alert(res.message)
+            router.push('/restraunt/dashboard')
+          } else {
+            
+          }
+        } catch (error) {
+          
+        }
+      }
+    }
+
     const handleOnFocus = (event) => {
       const {name, value} = event.target
       if(!value.length){
@@ -116,7 +142,11 @@ function Login() {
           )}
         </div>
         <div className="input-wrapper">
-          <button className="button-wrapper">Login</button>
+          <button onClick={(e) => {
+            if(!isError){
+              handleLogin(e)
+            }
+          }} className={isError ? 'button-wrapper-error': 'button-wrapper'}>Login</button>
         </div>
       </div>
     </>
