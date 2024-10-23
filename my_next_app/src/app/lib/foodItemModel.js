@@ -13,7 +13,9 @@ const foodItemSchema = new mongoose.Schema({
     description: {
         type: String,
     },
-    restro_id: mongoose.Schema.Types.ObjectId
+    restro_id: {
+        type: mongoose.Schema.Types.ObjectId
+    }
 })
 
 export default mongoose.models.foods || mongoose.model('foods', foodItemSchema)
