@@ -37,6 +37,7 @@ export async function POST(req, res) {
       .catch((error) => console.log(`connection failed with ${error}`));
 
     if (body.login) {
+      console.log('%c inside login api', 'color: yellow; font-size: 12px;')
       result = await Restraunt.findOne({ email: body.email });
 
       // will check whether user exist or not
