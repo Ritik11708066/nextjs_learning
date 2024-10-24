@@ -11,48 +11,141 @@ function AddFoodItem() {
     description: "",
   });
 
+  const [foodItemError, setFoodItemError] = useState({
+    foodName: "",
+    price: "",
+  });
+
+  const [isError, setError] = useState(false);
+
+  const checkValidation = (value) => {
+    return value.length === 0 ? false : true;
+  };
+  const validatePrice = (value) => {
+    const numberRegex = /^\d*$/;
+    return numberRegex.test(value);
+  };
+
+  const validateField = (value, fieldName) => {
+    switch (fieldName) {
+      case "foodName":
+        return checkValidation(value);
+      case "price":
+        return validatePrice(value);
+      default:
+        return true;
+    }
+  };
+  const handleCustomError = (fieldName) => {
+    switch (fieldName) {
+      case "foodName":
+        return "food Name is required";
+      case "price":
+        return "price is invalid";
+      default:
+        return true;
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFoodData({
       ...foodData,
       [name]: value,
     });
+
+    const tempError = { ...foodItemError };
+    if (!value) {
+      tempError[name] = `${name} is required`;
+    } else if (!validateField(value, name)) {
+      tempError[name] = handleCustomError(name);
+    } else {
+      tempError[name] = "";
+    }
+
+    setFoodItemError(tempError);
+
+    if (Object.values(tempError).some((error) => error !== "")) {
+      setError(true); // If any field has an error, set isError to true
+    } else {
+      setError(false); // No errors, so set isError to false
+    }
+  };
+
+  const handleOnFocus = (e) => {
+    const { name, value } = e.target;
+    if (!value.length) {
+      setFoodItemError({
+        ...foodItemError,
+        [name]: `${name} is required`,
+      });
+      setError(true);
+    } else {
+      setFoodItemError({
+        ...foodItemError,
+        [name]: "",
+      });
+      setError(false);
+    }
   };
 
   const handleAddFoodItem = async () => {
-    const { foodName, path, price, description } = foodData;
+    const { foodName, price } = foodData;
 
-    try {
-      // here we will get the restraunt detail from the local storage ,
-      // bcz we want restro id so that we can get to know which particular restro is adding food item
-      // and with the help of that same id we can display food items of different different restraunts.
+    e.preventDefault();
+    let tempError = false;
 
-      let restro_id;
-      const restrauntData = JSON.parse(localStorage.getItem("restraunt"));
-      if (restrauntData) {
-        console.log('got the data', restrauntData);
-        restro_id = restrauntData._id;
-      }
-
-      let data = await fetch("http://localhost:3000/api/food", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          foodName: foodName,
-          foodPrice: price,
-          foodImgPath: path,
-          foodDescription: description,
-          restro_id: restro_id,
-        }),
+    function handleErr(fieldname) {
+      tempError = true;
+      setFormDataError({
+        ...formDataError,
+        [fieldname]: `${fieldname} is required`,
       });
-      let response = await data.json();
-      if (response.success) {
-        alert("food item saved ");
+      setError(true);
+    }
+
+    if (!foodName) {
+      handleErr("foodName");
+    }
+    if (!price) {
+      handleErr("price");
+    }
+
+    if (!tempError) {
+      try {
+        // here we will get the restraunt detail from the local storage ,
+        // bcz we want restro id so that we can get to know which particular restro is adding food item
+        // and with the help of that same id we can display food items of different different restraunts.
+
+        let restro_id;
+        const restrauntData = JSON.parse(localStorage.getItem("restraunt"));
+        if (restrauntData) {
+          console.log("got the data", restrauntData);
+          restro_id = restrauntData._id;
+        }
+
+        let data = await fetch("http://localhost:3000/api/food", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            foodName: foodName,
+            foodPrice: price,
+            foodImgPath: path,
+            foodDescription: description,
+            restro_id: restro_id,
+          }),
+        });
+        let response = await data.json();
+        if (response.success) {
+          alert("food item saved ");
+        } else {
+            alert('food item is not saved')
+        }
+      } catch (error) {
+        console.log("error while saving", error.message);
       }
-    } catch (error) {
-        console.log('error while saving', error.message)
     }
   };
   return (
@@ -66,7 +159,13 @@ function AddFoodItem() {
           className="input-field"
           placeholder="enter food name"
           onChange={handleInputChange}
+          onFocus={handleOnFocus}
         />
+        {foodItemError?.foodName?.length ? (
+          <div style={{ color: "red" }}>{foodItemError?.foodName}</div>
+        ) : (
+          ""
+        )}
       </div>
       <div className="input-wrapper">
         <input
@@ -76,7 +175,13 @@ function AddFoodItem() {
           className="input-field"
           placeholder="enter price"
           onChange={handleInputChange}
+          onFocus={handleOnFocus}
         />
+        {foodItemError?.price?.length ? (
+          <div style={{ color: "red" }}>{foodItemError?.price}</div>
+        ) : (
+          ""
+        )}
       </div>
       <div className="input-wrapper">
         <input
