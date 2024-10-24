@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import '../../restraunt/style.css'
 import AddFoodItem from '@/app/_components/AddFoodItem'
+import FoodItemList from '@/app/_components/FoodItemList'
 
 
 function Dashboard() {
@@ -29,7 +30,10 @@ function Dashboard() {
         <button onClick={() => setFoodItem(true)}>Add food item</button>
         <button onClick={() => setFoodItem(false)}>Dashboard</button>
         {
-            isFoodItem ? <AddFoodItem/> : <h1>Dashboard: welcome {restroDetails?.email}</h1>
+            isFoodItem ? <AddFoodItem/> :<div className='container'> 
+                <h1>welcome {restroDetails?.email}</h1>
+                <FoodItemList/>
+            </div>
         }
         {/* welcome {restroDetails?.email} */}
         <RestrauntFooter/>
