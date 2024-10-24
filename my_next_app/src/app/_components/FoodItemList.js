@@ -7,27 +7,46 @@ function FoodItemList() {
   const [foodItems, setFoodItems] = useState([]);
   const [isLoading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const getFoodItems = async () => {
+    console.log('get food item api called');
     try {
-      console.log("inside use effect");
       setLoading(true);
       const { _id } = JSON.parse(localStorage.getItem("restraunt"));
-      const getFoodItems = async () => {
-        const data = await fetch(`http://localhost:3000/api/food/${_id}`);
-        const res = await data.json();
-        console.log("data from the api", res);
+      const data = await fetch(`http://localhost:3000/api/food/${_id}`);
+      const res = await data.json();
+      console.log("data from the api", res);
 
-        if (res.success) {
-          setFoodItems(res?.result);
-          setLoading(false);
-        }
-      };
+      if (res.success) {
+        setFoodItems(res?.result);
+        setLoading(false);
+      }
+    } catch (error) {}
+  };
 
+  useEffect(() => {
+      console.log("inside use effect");
       getFoodItems();
-    } catch (error) {
-      console.log("error occured!!", error.message);
-    }
   }, []);
+
+  const handleDeleteFoodItem = async (item) => {
+    const itemId = item._id;
+    console.log("id is ----", itemId);
+
+    try {
+      const data = await fetch(`http://localhost:3000/api/food/${itemId}`, {
+        method: "DELETE",
+      });
+      const res = await data.json();
+      if (res.success) {
+        alert(res.message);
+        getFoodItems();
+      } else {
+        alert(res.message);
+      }
+    } catch (error) {
+      console.log("error occured", error.message);
+    }
+  };
   return (
     <>
       {isLoading ? (
@@ -57,7 +76,9 @@ function FoodItemList() {
                         <td>image</td>
                         <td>{item?.description}</td>
                         <td>
-                          <button>Delete</button>
+                          <button onClick={() => handleDeleteFoodItem(item)}>
+                            Delete
+                          </button>
                           <button>Edit</button>
                         </td>
                       </tr>
