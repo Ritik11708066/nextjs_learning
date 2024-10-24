@@ -8,7 +8,7 @@ import Food from "@/app/lib/foodItemModel";
 
 export async function GET(request, content) {
   // here we will get the dynamically passed  id with the help of content
-  const id = content.params.restraunt_id;
+  const id = content.params.id;
   let success = false;
 
   try {
@@ -31,8 +31,37 @@ export async function GET(request, content) {
     });
   } catch (error) {
     return NextResponse.json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+export async function DELETE(request, content) {
+  try {
+    const id = content.params.id;
+    await mongoose
+      .connect(connectionStr)
+      .then(() => console.log("connection to db successfull"))
+      .catch((error) => console.log(`connection failed with ${error}`));
+    
+    const deletedItem = await Food.findByIdAndDelete(id)
+    if(!deletedItem){
+      console.log('item not found')
+      return NextResponse.json({
         success: false,
-        message: error.message
+        message: 'item not found'
+      })
+    }
+    return NextResponse.json({
+      success: true,
+      message: 'item deleted successfully',
+      data: deletedItem
+    })
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      message: 'there is some error !!!'
     })
   }
 }
