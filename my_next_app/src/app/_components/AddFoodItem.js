@@ -204,7 +204,12 @@ function AddFoodItem() {
         />
       </div>
       <div className="input-wrapper">
-        <button onClick={handleAddFoodItem}>Add Food</button>
+        <button onClick={(e) => {
+              if (!isError) {
+                handleAddFoodItem(e);
+              }
+            }}
+            className={isError ? "button-wrapper-error" : "button-wrapper"}>Add Food</button>
       </div>
     </div>
   );
