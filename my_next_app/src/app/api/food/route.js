@@ -8,6 +8,7 @@ export async function POST(request) {
     const payload = await request.json();
     console.log('payload', payload);
     let result;
+    let success = false
     await mongoose
       .connect(connectionStr)
       .then(() => console.log("connection to db successfull"))
@@ -21,8 +22,12 @@ export async function POST(request) {
         restro_id: payload.restro_id
     })
     console.log(" data to be saved in db", result);
+    // if everything works fine we get the proper result then we will set success as true
+    if(result){
+        success = true
+    }
     return NextResponse.json({
-        success: true,
+        success,
         result
     })
     
