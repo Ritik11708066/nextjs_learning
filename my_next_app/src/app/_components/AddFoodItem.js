@@ -89,16 +89,16 @@ function AddFoodItem() {
     }
   };
 
-  const handleAddFoodItem = async () => {
-    const { foodName, price } = foodData;
+  const handleAddFoodItem = async (e) => {
+    const { foodName, price, path, description } = foodData;
 
     e.preventDefault();
     let tempError = false;
 
     function handleErr(fieldname) {
       tempError = true;
-      setFormDataError({
-        ...formDataError,
+      setFoodItemError({
+        ...foodItemError,
         [fieldname]: `${fieldname} is required`,
       });
       setError(true);

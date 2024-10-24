@@ -49,7 +49,7 @@ function RestrauntHeader() {
           </li>
           {restroDetails && restroDetails.email ? (
             <li>
-              <button onClick={handleLogout}>Logout</button>
+              <div onClick={handleLogout}>Logout</div>
             </li>
           ) : null}
         </ul>
