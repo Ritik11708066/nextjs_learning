@@ -37,6 +37,44 @@ export async function GET(request, content) {
   }
 }
 
+export async function POST(request, content){
+  try {
+    const id = content.params.id
+    const payload = await request.json()
+    await mongoose
+    .connect(connectionStr)
+    .then(() => console.log("connection to db successfull"))
+    .catch((error) => console.log(`connection failed with ${error}`));
+  
+    const result = await Food.findByIdAndUpdate(id, {
+      name: payload.foodName,
+      price: payload.foodPrice,
+      path: payload.foodImgPath,
+      description: payload.foodDescription,
+      restro_id: payload.restro_id
+    }, {
+      new: true, // returns the updated document
+      runValidators: true  // run the validation check on the data
+    })
+
+    if(!result){
+      return NextResponse.json({
+        success: false,
+        message: 'Food not updated'
+      })
+    }
+
+    return NextResponse.json({
+      success: true,
+      result,
+      message: 'Food updated successfully'
+    })
+
+  } catch (error) {
+    
+  }
+}
+
 export async function DELETE(request, content) {
   try {
     const id = content.params.id;
