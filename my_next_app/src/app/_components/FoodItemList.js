@@ -2,10 +2,12 @@
 import local from "next/font/local";
 import React from "react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 function FoodItemList() {
   const [foodItems, setFoodItems] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const router = useRouter()
 
   const getFoodItems = async () => {
     console.log('get food item api called');
@@ -47,6 +49,10 @@ function FoodItemList() {
       console.log("error occured", error.message);
     }
   };
+
+  const handleEditFoodItem = (item) => {
+    router.push(`/restraunt/addFood?data=${encodeURIComponent(JSON.stringify(item))}`)
+  }
   return (
     <>
       {isLoading ? (
@@ -79,7 +85,7 @@ function FoodItemList() {
                           <button onClick={() => handleDeleteFoodItem(item)}>
                             Delete
                           </button>
-                          <button>Edit</button>
+                          <button onClick={() => handleEditFoodItem(item)}>Edit</button>
                         </td>
                       </tr>
                     ))

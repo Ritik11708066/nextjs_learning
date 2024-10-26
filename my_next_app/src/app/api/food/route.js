@@ -9,6 +9,7 @@ export async function POST(request) {
     console.log('payload', payload);
     let result;
     let success = false
+    let message = 'failed'
     await mongoose
       .connect(connectionStr)
       .then(() => console.log("connection to db successfull"))
@@ -25,10 +26,12 @@ export async function POST(request) {
     // if everything works fine we get the proper result then we will set success as true
     if(result){
         success = true
+        message = "food created successfully"
     }
     return NextResponse.json({
         success,
-        result
+        result,
+        message
     })
     
   } catch (error) {

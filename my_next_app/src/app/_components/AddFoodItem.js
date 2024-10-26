@@ -1,15 +1,29 @@
 "use client";
 import local from "next/font/local";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-function AddFoodItem() {
+function AddFoodItem(props) {
+  const {editFoodData} = props
+  const router = useRouter()
   const [foodData, setFoodData] = useState({
     foodName: "",
     price: "",
     path: "",
     description: "",
   });
+
+  useEffect(() => {
+    if(editFoodData){
+      setFoodData({
+        foodName: editFoodData?.name,
+        price: editFoodData?.price,
+        path: editFoodData?.path,
+        description: editFoodData?.description
+      })
+    }
+  }, [editFoodData])
 
   const [foodItemError, setFoodItemError] = useState({
     foodName: "",
@@ -124,7 +138,9 @@ function AddFoodItem() {
           restro_id = restrauntData._id;
         }
 
-        let data = await fetch("http://localhost:3000/api/food", {
+        const url = editFoodData ? `http://localhost:3000/api/food/${editFoodData?._id}` : 'http://localhost:3000/api/food'
+
+        let data = await fetch(url, {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -139,7 +155,8 @@ function AddFoodItem() {
         });
         let response = await data.json();
         if (response.success) {
-          alert("food item saved ");
+          alert(response.message);
+          router.push('/restraunt/dashboard')
         } else {
             alert('food item is not saved')
         }
@@ -155,7 +172,7 @@ function AddFoodItem() {
         <input
           type="text"
           name="foodName"
-          value={foodData.foodName}
+          value={foodData?.foodName}
           className="input-field"
           placeholder="enter food name"
           onChange={handleInputChange}
@@ -171,7 +188,7 @@ function AddFoodItem() {
         <input
           type="text"
           name="price"
-          value={foodData.price}
+          value={foodData?.price}
           className="input-field"
           placeholder="enter price"
           onChange={handleInputChange}
@@ -187,7 +204,7 @@ function AddFoodItem() {
         <input
           type="text"
           name="path"
-          value={foodData.path}
+          value={foodData?.path}
           className="input-field"
           placeholder="enter image path"
           onChange={handleInputChange}
@@ -197,7 +214,7 @@ function AddFoodItem() {
         <input
           type="text"
           name="description"
-          value={foodData.description}
+          value={foodData?.description}
           className="input-field"
           placeholder="enter description"
           onChange={handleInputChange}
@@ -209,7 +226,9 @@ function AddFoodItem() {
                 handleAddFoodItem(e);
               }
             }}
-            className={isError ? "button-wrapper-error" : "button-wrapper"}>Add Food</button>
+            className={isError ? "button-wrapper-error" : "button-wrapper"}>{
+              editFoodData ? "Edit Food" : "Add Food"
+            }</button>
       </div>
     </div>
   );
