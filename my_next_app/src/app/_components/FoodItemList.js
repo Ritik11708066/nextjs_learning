@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 function FoodItemList() {
   const [foodItems, setFoodItems] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   const getFoodItems = async () => {
-    console.log('get food item api called');
+    console.log("get food item api called");
     try {
       setLoading(true);
       const { _id } = JSON.parse(localStorage.getItem("restraunt"));
@@ -26,8 +26,8 @@ function FoodItemList() {
   };
 
   useEffect(() => {
-      console.log("inside use effect");
-      getFoodItems();
+    console.log("inside use effect");
+    getFoodItems();
   }, []);
 
   const handleDeleteFoodItem = async (item) => {
@@ -51,48 +51,63 @@ function FoodItemList() {
   };
 
   const handleEditFoodItem = (item) => {
-    router.push(`/restraunt/addFood?data=${encodeURIComponent(JSON.stringify(item))}`)
-  }
+    router.push(
+      `/restraunt/addFood?data=${encodeURIComponent(JSON.stringify(item))}`
+    );
+  };
   return (
     <>
       {isLoading ? (
         <div>Loading items....</div>
       ) : (
         <>
-          <div>Here are your Food Items</div>
-          <div>
-            <table>
-              <thead>
-                <tr>
-                  <td>S.No</td>
-                  <td>Item Name</td>
-                  <td>Price</td>
-                  <td>Image</td>
-                  <td>Description</td>
-                  <td>Actions</td>
-                </tr>
-              </thead>
-              <tbody>
-                {foodItems && foodItems?.length
-                  ? foodItems?.map((item, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item?.name}</td>
-                        <td>{item?.price}</td>
-                        <td>image</td>
-                        <td>{item?.description}</td>
-                        <td>
-                          <button onClick={() => handleDeleteFoodItem(item)}>
-                            Delete
-                          </button>
-                          <button onClick={() => handleEditFoodItem(item)}>Edit</button>
-                        </td>
-                      </tr>
-                    ))
-                  : null}
-              </tbody>
-            </table>
-          </div>
+          {foodItems && foodItems?.length ? (
+            <>
+              <div>Here are your Food Items</div>
+              <div>
+                <table>
+                  <thead>
+                    <tr>
+                      <td>S.No</td>
+                      <td>Item Name</td>
+                      <td>Price</td>
+                      <td>Image</td>
+                      <td>Description</td>
+                      <td>Actions</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {foodItems && foodItems?.length
+                      ? foodItems?.map((item, index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{item?.name}</td>
+                            <td>{item?.price}</td>
+                            <td>image</td>
+                            <td>{item?.description}</td>
+                            <td>
+                              <button
+                                onClick={() => handleDeleteFoodItem(item)}
+                              >
+                                Delete
+                              </button>
+                              <button onClick={() => handleEditFoodItem(item)}>
+                                Edit
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      : null}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : (
+            <div className="container">
+              <p>Your catalouge is empty!! Try adding some food items</p>
+              <p>Click on above button to fill your catalouge</p>
+            </div>
+          )}
         </>
       )}
     </>

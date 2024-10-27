@@ -26,7 +26,7 @@ export async function POST(request) {
     // if everything works fine we get the proper result then we will set success as true
     if(result){
         success = true
-        message = "food created successfully"
+        message = "food added successfully"
     }
     return NextResponse.json({
         success,
