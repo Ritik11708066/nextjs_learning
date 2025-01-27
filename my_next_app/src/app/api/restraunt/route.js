@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { connectionStr } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import Restraunt from "@/app/lib/restrauntModel";
+import jwt from 'jsonwebtoken'
 
 export async function GET() {
   try {
@@ -70,9 +71,12 @@ export async function POST(req, res) {
         address: body.address,
         city: body.city,
         contact: body.contact,
+        role: body.role
       });
-      console.log(" data to be saved in db", result);
-      return NextResponse.json({ result, success: true });
+
+      const token = jwt.sign({id: result?.email, role: body.role}, process.env.JWT_SECRET, {expiresIn: '1h'})
+      console.log(" data to be saved in db", result, token);
+      return NextResponse.json({ result, success: true, token });
     }
   } catch (error) {
     console.error("Error post api call", error);

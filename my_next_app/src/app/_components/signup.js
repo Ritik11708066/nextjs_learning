@@ -3,6 +3,7 @@ import local from "next/font/local";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useState } from "react";
+import { useAuth } from "../lib/context/authContext";
 
 function SignUp() {
   const [signupData, setSignupData] = useState({
@@ -13,6 +14,7 @@ function SignUp() {
     address: "",
     city: "",
     contact: "",
+    role: "admin",
   });
 
   const [formDataError, setFormDataError] = useState({
@@ -27,6 +29,8 @@ function SignUp() {
 
   const [isError, setError] = useState(false);
   const router = useRouter();
+
+  const {login} = useAuth()
 
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -104,15 +108,15 @@ function SignUp() {
 
     const tempError = { ...formDataError };
 
-    if(value.length === 0){
-      tempError[name] = `${name} is required`
-    } else if (!validateField(value,name)){
-      tempError[name] = customErrorMessage(name)
+    if (value.length === 0) {
+      tempError[name] = `${name} is required`;
+    } else if (!validateField(value, name)) {
+      tempError[name] = customErrorMessage(name);
     } else {
-      tempError[name] = ""
+      tempError[name] = "";
     }
 
-    setFormDataError(tempError)
+    setFormDataError(tempError);
 
     if (Object.values(tempError).some((error) => error !== "")) {
       setError(true); // If any field has an error, set isError to true
@@ -136,9 +140,9 @@ function SignUp() {
   // function to handle signup
   const handleSignup = async (e) => {
     e.preventDefault();
-    console.log('clicked')
+    console.log("clicked");
 
-    if(!isError){
+    if (!isError) {
       try {
         // calling post api with the payload
         const res = await fetch("http://localhost:3000/api/restraunt", {
@@ -148,23 +152,24 @@ function SignUp() {
           },
           body: JSON.stringify(signupData),
         });
-  
+
         const response = await res.json();
         console.log("from the post request", response);
-  
+
         if (response.success) {
           console.log("user registered successfully");
-          alert("Restraunt registered successfully");
-  
+          login(response.token)
+          // alert("Restraunt registered successfully, Please log in");
+
           // first we will delete the password from our resposne
           // then we will save our data into local storage.
-  
-          const { result } = response;
-          delete result.password;
-          localStorage.setItem("restraunt", JSON.stringify(result));
-  
-          // after successfull registration we will redirect to dasboard.
-          router.push("/restraunt/dashboard");
+
+          // const { result } = response;
+          // delete result.password;
+          // localStorage.setItem("restraunt", JSON.stringify(result));
+
+          // // after successfull registration we will redirect to dasboard.
+          // router.push("/restraunt/dashboard");
         }
       } catch (error) {
         console.log("error signup", error);
@@ -210,6 +215,12 @@ function SignUp() {
           ) : (
             ""
           )}
+          <div className="input-wrapper">
+            <select name="role" onChange={handleInputChange} value={signupData?.role}>
+              <option value="admin">Admin</option>
+              <option value="owner">Restaurant Owner</option>
+            </select>
+          </div>
         </div>
         <div className="input-wrapper">
           <input
@@ -292,13 +303,14 @@ function SignUp() {
           )}
         </div>
         <div className="input-wrapper">
-          <button onClick={(e) => {
-            if(!isError){
-              handleSignup(e)
-            }
-          }
-            } className={isError ? 'button-wrapper-error' : 'button-wrapper'}
-            >
+          <button
+            onClick={(e) => {
+              if (!isError) {
+                handleSignup(e);
+              }
+            }}
+            className={isError ? "button-wrapper-error" : "button-wrapper"}
+          >
             Signup
           </button>
         </div>

@@ -9,6 +9,7 @@ const RestrauntSchema = new mongoose.Schema({
   address: { type: String, required: true },
   city: { type: String, required: true },
   contact: { type: String, required: true },
+  role: {type: String, required: true},
 });
 
 export default mongoose.models.restraunts ||
